@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Buku; //memanggil model Buku.php, yang didalamnya ada definisi tabel yang digunakan, yaitu tabel buku.
+use App\Models\Buku; 
+use App\Models\Gallery; 
+use Image;
 
 class BukuController extends Controller
 {
-
-    // public function_construct(){
-    //     $this->middleware('auth');
-    // }
-
 
     //fungsi index
     public function index() {
@@ -53,7 +50,7 @@ class BukuController extends Controller
         // Menghitung nomor urut berdasarkan halaman saat ini
         $no = $batas * ($data_buku->currentPage() - 1);
 
-        return view('buku.search', compact('jumlah_buku', 'data_buku', 'no', 'cari'));
+        return view('auth.buku.search', compact('jumlah_buku', 'data_buku', 'no', 'cari'));
     }
 
     public function store(Request $request) {
@@ -81,18 +78,61 @@ class BukuController extends Controller
 
     public function edit($id) {
         $buku = Buku::find($id);
-        return view('buku.edit', compact('buku'));
+        return view('auth.buku.edit', compact('buku'));
     }
 
 
     public function update(Request $request, $id) {
         $buku = Buku::find($id);
+
+        $request->validate([
+            'thumbnail' => 'image|mimes:jpeg,jpg,png'
+        ]);
+
+        if ($request->hasFile('thumbnail')) {
+            // Jika ada, proses upload dan manipulasi gambar
+            $fileName = time().'_'.$request->thumbnail->getClientOriginalName();
+            $filePath = $request->file('thumbnail')->storeAs('uploads', $fileName, 'public');
+    
+            Image::make(storage_path().'/app/public/uploads/'.$fileName)
+                ->fit(240, 320)
+                ->save();
+    
+            // Update path dan nama file pada model
+            $buku->update([
+                'filename' => $fileName,
+                'filepath' => '/storage/' . $filePath,
+            ]);
+        }else{
+            $buku->update([
+                'filename' => 'src=""', // Ganti dengan nama file default yang diinginkan
+                'filepath' => 'src=""', // Sesuaikan dengan path file default
+            ]);
+        }
+    
+        // Update data buku tanpa memperbarui thumbnail jika tidak diunggah
         $buku->update([
             'judul' => $request->judul,
             'penulis' => $request->penulis,
             'harga' => $request->harga,
-            'tgl_terbit' => $request->tgl_terbit
+            'tgl_terbit' => $request->tgl_terbit,
+            
         ]);
-        return redirect('/buku')->with('pesan','Data buku berhasil diubah');
+
+        if ($request->file('gallery')) {
+            foreach($request->file('gallery') as $key => $file) {
+                $fileNameGallery = time().'_'.$file->getClientOriginalName();
+                $filePathGallery = $file->storeAs('uploads', $fileNameGallery, 'public');
+
+                $gallery = Gallery::create([
+                    'nama_galeri'   => $fileNameGallery,
+                    'path'          => '/storage/' . $filePathGallery,
+                    'foto'          => $fileNameGallery,
+                    'buku_id'       => $id
+                ]);
+            }
+        }
+        
+        return redirect('/buku')->with('pesan','Perubahan Data Buku Berhasil Disimpan');
     }
 }

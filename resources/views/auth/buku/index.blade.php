@@ -25,7 +25,7 @@
             <a href="{{ route('buku.create') }}" class="btn btn-primary">Tambah Buku</a>
             
             @if(Auth::check() && Auth::user()->role == 'admin')
-            <form action="{{ route('buku.search') }}" method="get" class="flex items-center">
+            <form action="{{ route('buku.search') }}" method="get" class="flex items-center" >
                 <input type="text" name="kata" class="form-control" placeholder="Cari..." style="width: 100%; display: inline; margin-top: 10px; margin-bottom: 10px; float: right;">
             </form>
             @endif
@@ -35,6 +35,8 @@
             <thead>
                 <tr>
                     <th>id</th>
+                    <th>Foto</th>
+                    <th>gallery</th>
                     <th>Judul Buku</th>
                     <th>Penulis</th>
                     <th>Harga</th>
@@ -45,7 +47,31 @@
             <tbody>
                 @foreach($data_buku as $buku)
                 <tr>
+                
                     <td>{{ $buku->id }}</td>
+                    @if ( $buku->filepath )
+                                <td class="relative">
+                                    <img
+                                    class="h-200 w-200 object-cover object-center"
+                                    src="{{ asset($buku->filepath) }}"
+                                    alt=""
+                                    style="padding-right: 20px;"
+                                    />
+                                </td>
+                                @endif
+
+                                <td class="gallery_items">
+                        @foreach($buku->galleries()->get() as $gallery)
+                            <div class="gallery_item">
+                                <img
+                                class=" object-cover object-center"
+                                src="{{ asset($gallery->path) }}"
+                                alt=""
+                                width="200"
+                                />
+                            </div>
+                        @endforeach
+                            </td>
                     <td>{{ $buku->judul }}</td>
                     <td>{{ $buku->penulis }}</td>
                     <td>{{ "Rp ".number_format($buku->harga, 2, ',', '.') }}</td>
