@@ -52,10 +52,10 @@
                     @if ( $buku->filepath )
                                 <td class="relative">
                                     <img
-                                    class="h-200 w-200 object-cover object-center"
+                                    class="h-50 w-50 object-cover object-center"
                                     src="{{ asset($buku->filepath) }}"
                                     alt=""
-                                    style="padding-right: 20px;"
+                                    
                                     />
                                 </td>
                                 @endif
@@ -67,7 +67,7 @@
                                 class=" object-cover object-center"
                                 src="{{ asset($gallery->path) }}"
                                 alt=""
-                                width="200"
+                                width="100"
                                 />
                             </div>
                         @endforeach

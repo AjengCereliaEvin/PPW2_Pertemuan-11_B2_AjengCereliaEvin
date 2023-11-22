@@ -52,8 +52,15 @@
                         </script>
                     </div>
 
+                    <a href="{{ route('buku.deleteGallery', $gallery->id) }}" 
+                            class="btn btn-danger btn-sm shadow mt-2 mb-5" 
+                            style="position:inherit; top: 10px; right: 10px;">
+                            <i class="bi bi-x-lg"></i>Delete</a>
+
             <button onclick="return confirm('Apakah ingin menyimpan perubahan?')" type="submit" class="btn btn-primary">Simpan Perubahan</button>
             <a href="/buku" class="btn btn-secondary">Batal</a>
+
+        
         </form>
     </div>
 

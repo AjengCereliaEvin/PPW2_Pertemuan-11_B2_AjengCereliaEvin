@@ -11,12 +11,16 @@ use App\Models\Gallery;
 class Buku extends Model
 {
     protected $table = 'buku';
-    protected $fillable = ['id', 'judul', 'harga', 'tgl_terbit', 'created_at', 'updated_at', 'filename', 'filepath'];
+    protected $fillable = ['id', 'judul', 'harga', 'tgl_terbit', 'created_at', 'updated_at', 'filename', 'filepath', 'buku_soe', 'foto'];
     protected $dates = ['tgl_terbit'];
 
     public function galleries(): HasMany
     {
         return $this->hasMany(Gallery::class);
+    }
+
+    public function photos(){
+        return $this->hasMany('App\Buku', 'id_buku', 'id');
     }
        
 }
